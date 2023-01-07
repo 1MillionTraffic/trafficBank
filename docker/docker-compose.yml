@@ -1,0 +1,19 @@
+version: '3'
+services:
+  mysql-traffic-bank:
+    image: mysql:8.0
+    container_name: mysql-traffic-bank
+    ports:
+      - "23306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: bank
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - traffic-bank-mysql-volume:/var/lib/mysql
+
+volumes:
+  traffic-bank-mysql-volume:
+    driver: local
