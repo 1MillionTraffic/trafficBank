@@ -6,6 +6,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.Instant;
 
@@ -21,5 +22,6 @@ public class TransactionHistory {
     private Long afterMoney;
     private Long fromAccountId;
     private Long toAccountId;
+    @CreationTimestamp
     private Instant createdDt;
 }

@@ -6,6 +6,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
 
@@ -17,9 +19,12 @@ public class BankAccount {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Long userId;
+    private String bankType;
     private String accountSeq;
     private String accountName;
     private Long lastSyncHistoryId;
+    @CreationTimestamp
     private Instant createdDt;
+    @UpdateTimestamp
     private Instant updatedDt;
 }

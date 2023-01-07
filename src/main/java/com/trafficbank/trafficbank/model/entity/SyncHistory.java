@@ -6,6 +6,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.Instant;
 
@@ -20,5 +21,6 @@ public class SyncHistory {
     private Long syncMoney;
     private Instant transactionStartDt;
     private Instant transactionEndDt;
+    @CreationTimestamp
     private Instant createdDt;
 }

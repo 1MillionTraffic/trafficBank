@@ -5,11 +5,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface BankAccountRepository extends JpaRepository<BankAccount, Long> {
 
-    BankAccount findByUserId(Long userId);
+    Optional<BankAccount> findByUserId(Long userId);
 
     List<BankAccount> findAllByUserId(Long userId);
 

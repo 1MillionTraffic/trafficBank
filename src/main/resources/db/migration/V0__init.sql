@@ -31,7 +31,8 @@ create table bank_account
 (
     id                   bigint auto_increment primary key,
     user_id              bigint       not null,
-    account_seq          char(14)     not null,
+    bank_type            char(4)      not null,
+    account_seq          char(13)     not null,
     account_name         varchar(100) not null,
     last_sync_history_id bigint       null,
     created_dt           timestamp    not null default current_timestamp,

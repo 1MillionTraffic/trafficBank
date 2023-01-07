@@ -1,0 +1,17 @@
+### Create bank account user:1
+POST http://localhost:7777/account
+Content-Type: application/x-www-form-urlencoded
+
+user_id=1&account_name=입출금통장&bank_type=DEPOSIT_AND_WITHDRAWAL_ACCOUNT
+
+### GET all account user:1
+GET http://localhost:7777/account/1
+
+### GET all account info
+GET http://localhost:7777/account
+
+### GET user info
+GET http://localhost:7777/user/1
+
+### GET all user info
+GET http://localhost:7777/user
