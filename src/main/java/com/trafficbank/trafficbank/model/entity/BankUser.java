@@ -1,9 +1,7 @@
 package com.trafficbank.trafficbank.model.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.trafficbank.trafficbank.model.enums.BankUserState;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
@@ -20,6 +18,8 @@ public class BankUser {
     private Long id;
     private String seq;
     private String name;
+    @Enumerated(EnumType.STRING)
+    private BankUserState state;
     @CreationTimestamp
     private Instant createdDt;
     @UpdateTimestamp

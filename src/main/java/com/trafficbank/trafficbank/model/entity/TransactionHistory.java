@@ -1,9 +1,7 @@
 package com.trafficbank.trafficbank.model.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.trafficbank.trafficbank.model.enums.TransactionType;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
@@ -18,10 +16,12 @@ public class TransactionHistory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String transactionSeq;
-    private Long beforeMoney;
-    private Long afterMoney;
+    private Long money;
+    private Long balance;
     private Long fromAccountId;
     private Long toAccountId;
+    @Enumerated(EnumType.STRING)
+    private TransactionType transactionType;
     @CreationTimestamp
     private Instant createdDt;
 }

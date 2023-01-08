@@ -3,6 +3,7 @@ create table bank_user
     id         bigint auto_increment primary key,
     seq        char(36)    not null,
     name       varchar(40) not null,
+    state      char(10)    not null,
     created_dt timestamp   not null default current_timestamp,
     updated_dt timestamp   not null default current_timestamp on update current_timestamp
 );
@@ -17,6 +18,7 @@ create table sync_history
     id                   bigint auto_increment primary key,
     account_id           bigint    not null,
     sync_money           bigint    not null,
+    transaction_state    char(10)  not null,
     transaction_start_dt timestamp not null,
     transaction_end_dt   timestamp not null,
     created_dt           timestamp not null default current_timestamp
@@ -24,6 +26,9 @@ create table sync_history
 
 create index idx_sync_created_dt
     on sync_history (created_dt);
+
+create index idx_sync_account_state
+    on sync_history (account_id, transaction_state);
 
 # ------------------------------------
 
@@ -48,13 +53,14 @@ create index idx_account_seq
 
 create table transaction_history
 (
-    id              bigint auto_increment primary key,
-    transaction_seq char(32)  not null,
-    before_money    bigint    not null,
-    after_money     bigint    not null,
-    from_account_id bigint    null,
-    to_account_id   bigint    null,
-    created_dt      timestamp not null default current_timestamp,
+    id               bigint auto_increment primary key,
+    transaction_seq  char(36)  not null,
+    money            bigint    not null,
+    balance          bigint    not null,
+    from_account_id  bigint    not null,
+    to_account_id    bigint    null,
+    transaction_type char(10)  not null,
+    created_dt       timestamp not null default current_timestamp,
     foreign key (from_account_id) references bank_account (id),
     foreign key (to_account_id) references bank_account (id)
 );

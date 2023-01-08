@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/user")
@@ -24,7 +23,7 @@ public class BankUserController {
     public List<BankUserDTO> getAllBankUser() {
         return bankUserService.getAllBankUser().stream()
                 .map(BankUserDTO::of)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @PostMapping

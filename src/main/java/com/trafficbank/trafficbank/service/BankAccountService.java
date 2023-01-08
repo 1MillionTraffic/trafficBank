@@ -30,6 +30,7 @@ public class BankAccountService {
         bankUserRepository.findById(userId)
                 .orElseThrow(() -> new IllegalStateException("User is not exist."));
 
+        // 계좌 번호 생성은 어떻게 할까?
         BankAccount bankAccount = new BankAccount();
         bankAccount.setBankType(bankType.getType());
         bankAccount.setAccountSeq(generateAccountSeq(bankType));
