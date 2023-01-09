@@ -1,4 +1,4 @@
-package com.trafficbank.trafficbank.controller;
+package com.trafficbank.trafficbank.service;
 
 import com.trafficbank.trafficbank.model.dto.TransactionResult;
 import com.trafficbank.trafficbank.model.entity.TransactionHistory;

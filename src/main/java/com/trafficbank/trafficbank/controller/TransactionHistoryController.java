@@ -1,11 +1,13 @@
 package com.trafficbank.trafficbank.controller;
 
 import com.trafficbank.trafficbank.model.dto.TransactionResult;
+import com.trafficbank.trafficbank.service.TransactionHistoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+// 동시에 입출금이 이루이지면? -> redis lock을 이용해야하나?
 @RequestMapping("/transaction")
 @RestController
 @RequiredArgsConstructor
