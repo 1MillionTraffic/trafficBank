@@ -41,7 +41,7 @@ public class TransactionHistoryService {
         transactionHistoryRepository.saveAll(transactionHistoryList);
 
         fromBankAccount.setBalance(fromLastBalance - money);
-        toBankAccount.setBalance(fromLastBalance + money);
+        toBankAccount.setBalance(toLastBalance + money);
         bankAccountRepository.saveAll(List.of(fromBankAccount, toBankAccount));
 
         return transactionHistoryList.stream()
