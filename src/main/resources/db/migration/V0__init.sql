@@ -34,16 +34,15 @@ create index idx_sync_account_state
 
 create table bank_account
 (
-    id                   bigint auto_increment primary key,
-    user_id              bigint       not null,
-    bank_type            char(4)      not null,
-    account_seq          char(13)     not null,
-    account_name         varchar(100) not null,
-    last_sync_history_id bigint       null,
-    created_dt           timestamp    not null default current_timestamp,
-    updated_dt           timestamp    not null default current_timestamp on update current_timestamp,
-    foreign key (user_id) references bank_user (id),
-    foreign key (last_sync_history_id) references sync_history (id)
+    id           bigint auto_increment primary key,
+    user_id      bigint       not null,
+    bank_type    char(4)      not null,
+    account_seq  char(13)     not null,
+    account_name varchar(100) not null,
+    money        bigint       not null,
+    created_dt   timestamp    not null default current_timestamp,
+    updated_dt   timestamp    not null default current_timestamp on update current_timestamp,
+    foreign key (user_id) references bank_user (id)
 );
 
 create index idx_account_seq
