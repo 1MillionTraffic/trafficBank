@@ -4,6 +4,7 @@ import com.trafficbank.trafficbank.model.entity.TransactionHistory;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -12,5 +13,7 @@ public interface TransactionHistoryRepository extends JpaRepository<TransactionH
     Optional<TransactionHistory> findFirstByFromAccountIdOrderByIdDesc(Long fromAccountId);
 
     List<TransactionHistory> findAllByFromAccountId(Long accountId);
+
+    List<TransactionHistory> findAllByCreatedDtBetween(Instant from, Instant to);
 
 }

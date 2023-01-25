@@ -13,25 +13,6 @@ create index idx_user_seq
 
 # ------------------------------------
 
-create table sync_history
-(
-    id                   bigint auto_increment primary key,
-    account_id           bigint    not null,
-    sync_money           bigint    not null,
-    transaction_state    char(10)  not null,
-    transaction_start_dt timestamp not null,
-    transaction_end_dt   timestamp not null,
-    created_dt           timestamp not null default current_timestamp
-);
-
-create index idx_sync_created_dt
-    on sync_history (created_dt);
-
-create index idx_sync_account_state
-    on sync_history (account_id, transaction_state);
-
-# ------------------------------------
-
 create table bank_account
 (
     id           bigint auto_increment primary key,
