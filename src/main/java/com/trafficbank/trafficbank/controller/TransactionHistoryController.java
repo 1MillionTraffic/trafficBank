@@ -4,7 +4,9 @@ import com.trafficbank.trafficbank.anootation.ShortLocker;
 import com.trafficbank.trafficbank.model.dto.TransactionResult;
 import com.trafficbank.trafficbank.service.TransactionHistoryService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.List;
 
@@ -22,7 +24,7 @@ public class TransactionHistoryController {
                                                  @RequestParam("to_account_id") Long toBankAccountId,
                                                  @RequestParam long money) {
         if (money <= 0) {
-            throw new IllegalStateException("Money is not natural number.");
+            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Money is not natural number.");
         }
 
         return transactionHistoryService.transfer(fromBankAccountId, toBankAccountId, money);
@@ -42,7 +44,7 @@ public class TransactionHistoryController {
     @PostMapping("/{accountId}/withdraw")
     public TransactionResult withdrawAccount(@PathVariable Long accountId, @RequestParam long money) {
         if (money <= 0) {
-            throw new IllegalStateException("Money is not natural number.");
+            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Money is not natural number.");
         }
 
         return transactionHistoryService.withdraw(accountId, money);
@@ -52,7 +54,7 @@ public class TransactionHistoryController {
     @PostMapping("/{accountId}/deposit")
     public TransactionResult depositAccount(@PathVariable Long accountId, @RequestParam long money) {
         if (money <= 0) {
-            throw new IllegalStateException("Money is not natural number.");
+            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Money is not natural number.");
         }
 
         return transactionHistoryService.deposit(accountId, money);
