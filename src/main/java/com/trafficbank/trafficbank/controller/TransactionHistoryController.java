@@ -17,8 +17,8 @@ public class TransactionHistoryController {
 
     private final TransactionHistoryService transactionHistoryService;
 
-    @ShortLocker(key = "accountId={0}")
-    @ShortLocker(key = "accountId={1}")
+    @ShortLocker(key = "accountId={0}", unlock = true)
+    @ShortLocker(key = "accountId={1}", unlock = true)
     @PostMapping
     public List<TransactionResult> transferMoney(@RequestParam("from_account_id") Long fromBankAccountId,
                                                  @RequestParam("to_account_id") Long toBankAccountId,
@@ -40,7 +40,7 @@ public class TransactionHistoryController {
         return transactionHistoryService.getTransaction(accountId);
     }
 
-    @ShortLocker(key = "accountId={0}")
+    @ShortLocker(key = "accountId={0}", unlock = true)
     @PostMapping("/{accountId}/withdraw")
     public TransactionResult withdrawAccount(@PathVariable Long accountId, @RequestParam long money) {
         if (money <= 0) {
@@ -50,7 +50,7 @@ public class TransactionHistoryController {
         return transactionHistoryService.withdraw(accountId, money);
     }
 
-    @ShortLocker(key = "accountId={0}")
+    @ShortLocker(key = "accountId={0}", unlock = true)
     @PostMapping("/{accountId}/deposit")
     public TransactionResult depositAccount(@PathVariable Long accountId, @RequestParam long money) {
         if (money <= 0) {
