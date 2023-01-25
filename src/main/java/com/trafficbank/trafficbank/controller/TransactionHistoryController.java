@@ -3,8 +3,6 @@ package com.trafficbank.trafficbank.controller;
 import com.trafficbank.trafficbank.anootation.ShortLocker;
 import com.trafficbank.trafficbank.model.dto.TransactionResult;
 import com.trafficbank.trafficbank.service.TransactionHistoryService;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,7 +20,11 @@ public class TransactionHistoryController {
     @PostMapping
     public List<TransactionResult> transferMoney(@RequestParam("from_account_id") Long fromBankAccountId,
                                                  @RequestParam("to_account_id") Long toBankAccountId,
-                                                 @Valid @Min(1) long money) {
+                                                 @RequestParam long money) {
+        if (money <= 0) {
+            throw new IllegalStateException("Money is not natural number.");
+        }
+
         return transactionHistoryService.transfer(fromBankAccountId, toBankAccountId, money);
     }
 
@@ -38,13 +40,21 @@ public class TransactionHistoryController {
 
     @ShortLocker(key = "accountId={0}")
     @PostMapping("/{accountId}/withdraw")
-    public TransactionResult withdrawAccount(@PathVariable Long accountId, @Valid @Min(1) long money) {
+    public TransactionResult withdrawAccount(@PathVariable Long accountId, @RequestParam long money) {
+        if (money <= 0) {
+            throw new IllegalStateException("Money is not natural number.");
+        }
+
         return transactionHistoryService.withdraw(accountId, money);
     }
 
     @ShortLocker(key = "accountId={0}")
     @PostMapping("/{accountId}/deposit")
-    public TransactionResult depositAccount(@PathVariable Long accountId, @Valid @Min(1) long money) {
+    public TransactionResult depositAccount(@PathVariable Long accountId, @RequestParam long money) {
+        if (money <= 0) {
+            throw new IllegalStateException("Money is not natural number.");
+        }
+
         return transactionHistoryService.deposit(accountId, money);
     }
 
