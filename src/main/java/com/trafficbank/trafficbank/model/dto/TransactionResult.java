@@ -1,13 +1,14 @@
 package com.trafficbank.trafficbank.model.dto;
 
 import com.trafficbank.trafficbank.model.entity.TransactionHistory;
+import com.trafficbank.trafficbank.model.enums.TransactionType;
 import lombok.Builder;
 
 import java.time.Instant;
 
 @Builder
 public record TransactionResult(String transactionSeq, Long money, Long balance, Long fromAccountId, Long toAccountId,
-                                Instant createdDt) {
+                                TransactionType transactionType, Instant createdDt) {
     public static TransactionResult of(TransactionHistory transactionHistory) {
         return TransactionResult.builder()
                 .transactionSeq(transactionHistory.getTransactionSeq())
@@ -15,6 +16,7 @@ public record TransactionResult(String transactionSeq, Long money, Long balance,
                 .balance(transactionHistory.getBalance())
                 .fromAccountId(transactionHistory.getFromAccountId())
                 .toAccountId(transactionHistory.getToAccountId())
+                .transactionType(transactionHistory.getTransactionType())
                 .createdDt(transactionHistory.getCreatedDt())
                 .build();
     }

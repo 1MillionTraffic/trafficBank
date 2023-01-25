@@ -8,7 +8,9 @@ import com.trafficbank.trafficbank.repository.BankAccountRepository;
 import com.trafficbank.trafficbank.repository.TransactionHistoryRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.List;
 import java.util.UUID;
@@ -23,16 +25,16 @@ public class TransactionHistoryService {
     @Transactional
     public List<TransactionResult> transfer(Long fromBankAccountId, Long toBankAccountId, long money) {
         BankAccount fromBankAccount = bankAccountRepository.findById(fromBankAccountId)
-                .orElseThrow(() -> new IllegalStateException("Account is not exists."));
+                .orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND, "Account is not exists."));
 
         BankAccount toBankAccount = bankAccountRepository.findById(toBankAccountId)
-                .orElseThrow(() -> new IllegalStateException("Account is not exists."));
+                .orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND, "Account is not exists."));
 
         // TODO: 정지 계좌인지 체크
         long fromLastBalance = fromBankAccount.getBalance();
 
         if (fromLastBalance < money) {
-            throw new IllegalStateException("Balance is insufficient.");
+            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Balance is insufficient.");
         }
 
         long toLastBalance = toBankAccount.getBalance();
@@ -86,12 +88,12 @@ public class TransactionHistoryService {
     @Transactional
     public TransactionResult withdraw(Long accountId, long money) {
         BankAccount bankAccount = bankAccountRepository.findById(accountId)
-                .orElseThrow(() -> new IllegalStateException("Account is not exists."));
+                .orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND, "Account is not exists."));
 
         long lastBalance = bankAccount.getBalance();
 
         if (lastBalance < money) {
-            throw new IllegalStateException("Balance is insufficient.");
+            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Balance is insufficient.");
         }
 
         TransactionHistory transactionHistory = makeTransactionHistory(accountId, -money, lastBalance, TransactionType.WITHDRAW);
@@ -106,7 +108,7 @@ public class TransactionHistoryService {
     @Transactional
     public TransactionResult deposit(Long accountId, long money) {
         BankAccount bankAccount = bankAccountRepository.findById(accountId)
-                .orElseThrow(() -> new IllegalStateException("Account is not exists."));
+                .orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND, "Account is not exists."));
 
         long lastBalance = bankAccount.getBalance();
 
