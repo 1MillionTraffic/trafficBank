@@ -20,7 +20,7 @@ create table bank_account
     bank_type    char(4)      not null,
     account_seq  char(13)     not null,
     account_name varchar(100) not null,
-    money        bigint       not null,
+    balance      bigint       not null,
     created_dt   timestamp    not null default current_timestamp,
     updated_dt   timestamp    not null default current_timestamp on update current_timestamp,
     foreign key (user_id) references bank_user (id)

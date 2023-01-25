@@ -36,7 +36,7 @@ public class BankAccountService {
         bankAccount.setAccountSeq(generateAccountSeq(bankType));
         bankAccount.setUserId(userId);
         bankAccount.setAccountName(accountName);
-        bankAccount.setMoney(0);
+        bankAccount.setBalance(0);
 
         bankAccountRepository.save(bankAccount);
 

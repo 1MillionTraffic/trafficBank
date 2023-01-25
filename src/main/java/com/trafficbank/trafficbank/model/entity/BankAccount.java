@@ -22,7 +22,7 @@ public class BankAccount {
     private String bankType;
     private String accountSeq;
     private String accountName;
-    private long money;
+    private long balance;
     @CreationTimestamp
     private Instant createdDt;
     @UpdateTimestamp

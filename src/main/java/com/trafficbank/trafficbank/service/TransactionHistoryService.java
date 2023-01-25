@@ -29,19 +29,19 @@ public class TransactionHistoryService {
                 .orElseThrow(() -> new IllegalStateException("Account is not exists."));
 
         // TODO: 정지 계좌인지 체크
-        long fromLastBalance = fromBankAccount.getMoney();
+        long fromLastBalance = fromBankAccount.getBalance();
 
         if (fromLastBalance < money) {
             throw new IllegalStateException("Balance is insufficient.");
         }
 
-        long toLastBalance = toBankAccount.getMoney();
+        long toLastBalance = toBankAccount.getBalance();
 
         List<TransactionHistory> transactionHistoryList = makeTransferTransactionHistoryList(fromBankAccountId, toBankAccountId, money, fromLastBalance, toLastBalance);
         transactionHistoryRepository.saveAll(transactionHistoryList);
 
-        fromBankAccount.setMoney(fromLastBalance - money);
-        toBankAccount.setMoney(fromLastBalance + money);
+        fromBankAccount.setBalance(fromLastBalance - money);
+        toBankAccount.setBalance(fromLastBalance + money);
         bankAccountRepository.saveAll(List.of(fromBankAccount, toBankAccount));
 
         return transactionHistoryList.stream()
@@ -88,7 +88,7 @@ public class TransactionHistoryService {
         BankAccount bankAccount = bankAccountRepository.findById(accountId)
                 .orElseThrow(() -> new IllegalStateException("Account is not exists."));
 
-        long lastBalance = bankAccount.getMoney();
+        long lastBalance = bankAccount.getBalance();
 
         if (lastBalance < money) {
             throw new IllegalStateException("Balance is insufficient.");
@@ -97,7 +97,7 @@ public class TransactionHistoryService {
         TransactionHistory transactionHistory = makeTransactionHistory(accountId, -money, lastBalance, TransactionType.WITHDRAW);
         transactionHistoryRepository.save(transactionHistory);
 
-        bankAccount.setMoney(lastBalance - money);
+        bankAccount.setBalance(lastBalance - money);
         bankAccountRepository.save(bankAccount);
 
         return TransactionResult.of(transactionHistory);
@@ -108,12 +108,12 @@ public class TransactionHistoryService {
         BankAccount bankAccount = bankAccountRepository.findById(accountId)
                 .orElseThrow(() -> new IllegalStateException("Account is not exists."));
 
-        long lastBalance = bankAccount.getMoney();
+        long lastBalance = bankAccount.getBalance();
 
         TransactionHistory transactionHistory = makeTransactionHistory(accountId, money, lastBalance, TransactionType.DEPOSIT);
         transactionHistoryRepository.save(transactionHistory);
 
-        bankAccount.setMoney(lastBalance + money);
+        bankAccount.setBalance(lastBalance + money);
         bankAccountRepository.save(bankAccount);
 
         return TransactionResult.of(transactionHistory);

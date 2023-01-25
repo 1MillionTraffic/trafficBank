@@ -6,7 +6,7 @@ import lombok.Builder;
 import java.time.Instant;
 
 @Builder
-public record BankAccountDTO(Long id, Long userId, String accountSeq, String accountName,
+public record BankAccountDTO(Long id, Long userId, String accountSeq, String accountName, long balance,
                              Instant createdDt, Instant updatedDt) {
     public static BankAccountDTO of(BankAccount bankAccount) {
         return BankAccountDTO.builder()
@@ -14,6 +14,7 @@ public record BankAccountDTO(Long id, Long userId, String accountSeq, String acc
                 .userId(bankAccount.getUserId())
                 .accountSeq(bankAccount.getAccountSeq())
                 .accountName(bankAccount.getAccountName())
+                .balance(bankAccount.getBalance())
                 .createdDt(bankAccount.getCreatedDt())
                 .updatedDt(bankAccount.getUpdatedDt())
                 .build();
