@@ -6,10 +6,10 @@ import com.trafficbank.trafficbank.model.entity.TransactionHistory;
 import com.trafficbank.trafficbank.model.enums.TransactionType;
 import com.trafficbank.trafficbank.repository.BankAccountRepository;
 import com.trafficbank.trafficbank.repository.TransactionHistoryRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.List;
@@ -24,18 +24,17 @@ public class TransactionHistoryService {
 
     @Transactional
     public List<TransactionResult> transfer(Long fromBankAccountId, Long toBankAccountId, long money) {
-        BankAccount fromBankAccount = bankAccountRepository.findById(fromBankAccountId)
-                .orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND, "Account is not exists."));
-
-        BankAccount toBankAccount = bankAccountRepository.findById(toBankAccountId)
+        BankAccount fromBankAccount = bankAccountRepository.findWithPessimisticLockById(fromBankAccountId)
                 .orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND, "Account is not exists."));
 
         // TODO: 정지 계좌인지 체크
         long fromLastBalance = fromBankAccount.getBalance();
-
         if (fromLastBalance < money) {
             throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Balance is insufficient.");
         }
+
+        BankAccount toBankAccount = bankAccountRepository.findWithPessimisticLockById(toBankAccountId)
+                .orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND, "Account is not exists."));
 
         long toLastBalance = toBankAccount.getBalance();
 
@@ -87,7 +86,7 @@ public class TransactionHistoryService {
 
     @Transactional
     public TransactionResult withdraw(Long accountId, long money) {
-        BankAccount bankAccount = bankAccountRepository.findById(accountId)
+        BankAccount bankAccount = bankAccountRepository.findWithPessimisticLockById(accountId)
                 .orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND, "Account is not exists."));
 
         long lastBalance = bankAccount.getBalance();
@@ -107,7 +106,7 @@ public class TransactionHistoryService {
 
     @Transactional
     public TransactionResult deposit(Long accountId, long money) {
-        BankAccount bankAccount = bankAccountRepository.findById(accountId)
+        BankAccount bankAccount = bankAccountRepository.findWithPessimisticLockById(accountId)
                 .orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND, "Account is not exists."));
 
         long lastBalance = bankAccount.getBalance();
