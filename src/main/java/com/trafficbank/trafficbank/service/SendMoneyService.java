@@ -8,6 +8,8 @@ import com.trafficbank.trafficbank.repository.AccountRepository;
 import com.trafficbank.trafficbank.repository.ActivityRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -23,10 +25,21 @@ public class SendMoneyService {
 
     @Transactional
     public AccountResponseDto send(String fromNumber, String toNumber, Long money){
-        Account fromAccount = findByNumber(fromNumber);
+        System.out.println("[Tread] " + Thread.currentThread() + "[start] select fromAccount");
+        Account fromAccount = findByNumber(fromNumber); // 10 원
+        System.out.println("[Tread] " + Thread.currentThread() + "[end] select fromAccount" + "balance: "+fromAccount.getBalance());
+
+        System.out.println("[Tread] " + Thread.currentThread() + "[start] select toAccount");
         Account toAccount = findByNumber(toNumber);
+        System.out.println("[Tread] " + Thread.currentThread() + "[end] select toAccount" + "balance: "+fromAccount.getBalance());
+
+        System.out.println("[Tread] " + Thread.currentThread() + "[start] withdraw");
         withdraw(money, fromAccount, toAccount);
+        System.out.println("[Tread] " + Thread.currentThread() + "[end] withdraw" + "balance: "+fromAccount.getBalance());
+
+        System.out.println("[Tread] " + Thread.currentThread() + "[start] deposit");
         deposit(money, fromAccount, toAccount);
+        System.out.println("[Tread] " + Thread.currentThread() + "[end] deposit" + "balance: "+fromAccount.getBalance());
         return AccountResponseDto.of(fromAccount);
     }
 

@@ -15,6 +15,11 @@ public class AccountController {
     private final CreateAccountService createAccountService;
     private final SendMoneyService sendMoneyService;
 
+    @GetMapping("/test")
+    public String test(){
+        return "hello";
+    }
+
     @PostMapping()
     public AccountResponseDto createAccount(@RequestBody CreateAccountRequestDto requestDto){
         return createAccountService.createAccount(requestDto);

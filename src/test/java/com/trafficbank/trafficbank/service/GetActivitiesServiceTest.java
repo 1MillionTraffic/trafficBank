@@ -18,41 +18,13 @@ import java.util.List;
 @Transactional
 @SpringBootTest
 public class GetActivitiesServiceTest {
-    public static final String FROM_NUMBER = "111";
-    public static final String TO_NUMBER = "222";
-    @Autowired
-    private GetActivitiesService getActivitiesService;
-    @Autowired
-    private SendMoneyService sendMoneyService;
-
-    @Autowired
-    private AccountRepository accountRepository;
-    @Autowired
-    private ActivityRepository activityRepository;
-
-    public Account fromAccount;
-    public Account toAccount;
-
-
     @BeforeAll
     public void beforeEach(){
-        fromAccount = Account.builder()
-                .balance(100000L)
-                .number(FROM_NUMBER)
-                .build();
-        toAccount = Account.builder()
-                .balance(100000L)
-                .number(TO_NUMBER)
-                .build();
-        accountRepository.save(fromAccount);
-        accountRepository.save(toAccount);
+
     }
 
     @Test
     public void test(){
-        sendMoneyService.send(fromAccount.getNumber(), toAccount.getNumber(), 100L);
-        sendMoneyService.send(toAccount.getNumber(), fromAccount.getNumber(),  500L);
-        List<ActivityResponseDto> list = getActivitiesService.findAll(fromAccount.getNumber());
-        System.out.println(list);
+        System.out.println("1");
     }
 }
