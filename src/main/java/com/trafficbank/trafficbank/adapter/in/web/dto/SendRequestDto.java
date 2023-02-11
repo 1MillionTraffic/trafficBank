@@ -1,5 +1,4 @@
-package com.trafficbank.trafficbank.dto.request;
-
+package com.trafficbank.trafficbank.adapter.in.web.dto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -7,7 +6,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class SendRequestDto {
-    private String fromNumber;
-    private String toNumber;
+    private String sourceAccountNumber;
+    private String targetAccountNumber;
     private Long money;
 }
