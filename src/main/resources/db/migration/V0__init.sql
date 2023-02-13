@@ -33,14 +33,15 @@ create index idx_account_seq
 
 create table transaction_history
 (
-    id               bigint auto_increment primary key,
-    transaction_seq  char(36)  not null,
-    money            bigint    not null,
-    balance          bigint    not null,
-    from_account_id  bigint    not null,
-    to_account_id    bigint    null,
-    transaction_type char(10)  not null,
-    created_dt       timestamp not null default current_timestamp,
+    id                 bigint auto_increment primary key,
+    transaction_seq    char(36)  not null,
+    money              bigint    not null,
+    balance            bigint    null,
+    from_account_id    bigint    not null,
+    to_account_id      bigint    null,
+    transaction_type   char(10)  not null,
+    transaction_status char(10)  not null,
+    created_dt         timestamp not null default current_timestamp,
     foreign key (from_account_id) references bank_account (id),
     foreign key (to_account_id) references bank_account (id)
 );

@@ -16,4 +16,6 @@ public interface TransactionHistoryRepository extends JpaRepository<TransactionH
 
     List<TransactionHistory> findAllByCreatedDtBetween(Instant from, Instant to);
 
+    List<TransactionHistory> findAllByIdIn(List<Long> idList);
+
 }

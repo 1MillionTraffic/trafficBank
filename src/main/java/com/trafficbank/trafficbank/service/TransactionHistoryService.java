@@ -1,29 +1,43 @@
 package com.trafficbank.trafficbank.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.trafficbank.trafficbank.model.dto.TransactionMessage;
 import com.trafficbank.trafficbank.model.dto.TransactionResult;
 import com.trafficbank.trafficbank.model.entity.BankAccount;
 import com.trafficbank.trafficbank.model.entity.TransactionHistory;
+import com.trafficbank.trafficbank.model.enums.TransactionStatus;
 import com.trafficbank.trafficbank.model.enums.TransactionType;
 import com.trafficbank.trafficbank.repository.BankAccountRepository;
 import com.trafficbank.trafficbank.repository.TransactionHistoryRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TransactionHistoryService {
 
+    private final ObjectMapper objectMapper;
+    private final KafkaTemplate<String, String> kafkaTemplate;
     private final TransactionHistoryRepository transactionHistoryRepository;
     private final BankAccountRepository bankAccountRepository;
 
+    @Value("${topics.transaction}")
+    private String bankTopic;
+
     @Transactional
-    public List<TransactionResult> transfer(Long fromBankAccountId, Long toBankAccountId, long money) {
+    public List<TransactionResult> transfer(Long fromBankAccountId, Long toBankAccountId, long money) throws JsonProcessingException {
         BankAccount fromBankAccount = bankAccountRepository.findWithPessimisticLockById(fromBankAccountId)
                 .orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND, "Account is not exists."));
 
@@ -33,17 +47,19 @@ public class TransactionHistoryService {
             throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Balance is insufficient.");
         }
 
-        BankAccount toBankAccount = bankAccountRepository.findWithPessimisticLockById(toBankAccountId)
+        bankAccountRepository.findById(toBankAccountId)
                 .orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND, "Account is not exists."));
 
-        long toLastBalance = toBankAccount.getBalance();
-
-        List<TransactionHistory> transactionHistoryList = makeTransferTransactionHistoryList(fromBankAccountId, toBankAccountId, money, fromLastBalance, toLastBalance);
-        transactionHistoryRepository.saveAll(transactionHistoryList);
-
         fromBankAccount.setBalance(fromLastBalance - money);
-        toBankAccount.setBalance(toLastBalance + money);
-        bankAccountRepository.saveAll(List.of(fromBankAccount, toBankAccount));
+
+        List<TransactionHistory> transactionHistoryList = makeTransferTransactionHistoryList(fromBankAccountId, toBankAccountId, money, fromLastBalance);
+        transactionHistoryRepository.saveAll(transactionHistoryList);
+        bankAccountRepository.save(fromBankAccount);
+
+        TransactionMessage transactionMessage = new TransactionMessage(fromBankAccountId, toBankAccountId, money, transactionHistoryList.get(0).getId(), transactionHistoryList.get(1).getId());
+
+        // topic: bank-traffic, key: 받는 사람 accountId, data: 받는 사람 transaction history id (zero-payload)
+        kafkaTemplate.send(bankTopic, toBankAccountId.toString(), objectMapper.writeValueAsString(transactionMessage));
 
         return transactionHistoryList.stream()
                 .map(TransactionResult::of)
@@ -56,7 +72,7 @@ public class TransactionHistoryService {
                 .toList();
     }
 
-    private List<TransactionHistory> makeTransferTransactionHistoryList(Long fromBankAccountId, Long toBankAccountId, long money, Long fromLastBalance, Long toLastBalance) {
+    private List<TransactionHistory> makeTransferTransactionHistoryList(Long fromBankAccountId, Long toBankAccountId, long money, Long fromLastBalance) {
         String transactionSequence = UUID.randomUUID().toString();
 
         TransactionHistory fromTransactionHistory = new TransactionHistory();
@@ -66,14 +82,15 @@ public class TransactionHistoryService {
         fromTransactionHistory.setMoney(-money);
         fromTransactionHistory.setBalance(fromLastBalance - money);
         fromTransactionHistory.setTransactionType(TransactionType.TRANSFER);
+        fromTransactionHistory.setTransactionStatus(TransactionStatus.PROGRESS);
 
         TransactionHistory toTransactionHistory = new TransactionHistory();
         toTransactionHistory.setTransactionSeq(transactionSequence);
         toTransactionHistory.setFromAccountId(toBankAccountId);
         toTransactionHistory.setToAccountId(fromBankAccountId);
         toTransactionHistory.setMoney(money);
-        toTransactionHistory.setBalance(toLastBalance + money);
         toTransactionHistory.setTransactionType(TransactionType.TRANSFER);
+        toTransactionHistory.setTransactionStatus(TransactionStatus.PROGRESS);
 
         return List.of(fromTransactionHistory, toTransactionHistory);
     }
@@ -131,5 +148,44 @@ public class TransactionHistoryService {
         transactionHistory.setTransactionType(transactionType);
 
         return transactionHistory;
+    }
+
+    @Transactional
+    public void completeTransaction(String message) throws JsonProcessingException {
+        log.info("[completeTransaction] started. " + message);
+
+        TransactionMessage transactionMessage = objectMapper.readValue(message, TransactionMessage.class);
+
+        List<TransactionHistory> transactionHistoryList = transactionHistoryRepository.findAllByIdIn(List.of(transactionMessage.getFromTransactionId(), transactionMessage.getToTransactionId()));
+
+        Optional<BankAccount> optionalFromBankAccount = bankAccountRepository.findWithPessimisticLockById(transactionMessage.getFromBankAccountId());
+        Optional<BankAccount> optionalToBankAccount = bankAccountRepository.findWithPessimisticLockById(transactionMessage.getToBankAccountId());
+
+        if (optionalFromBankAccount.isEmpty() || optionalToBankAccount.isEmpty()) {
+            transactionHistoryList.forEach(transactionHistory -> transactionHistory.setTransactionStatus(TransactionStatus.FAIL));
+
+            transactionHistoryRepository.saveAll(transactionHistoryList);
+
+            optionalFromBankAccount.ifPresent(account -> {
+                account.setBalance(account.getBalance() + transactionMessage.getMoney());
+                bankAccountRepository.save(account);
+            });
+
+            log.info("[completeTransaction] failed. from bank: " + optionalFromBankAccount.isPresent() + ", to bank: " + optionalToBankAccount.isPresent());
+
+            return;
+        }
+
+        BankAccount toBankAccount = optionalToBankAccount.get();
+        long balance = toBankAccount.getBalance() + transactionMessage.getMoney();
+        log.info("[completeTransaction] toBankAccount.balance: " + toBankAccount.getBalance() + ", after balance: " + balance);
+        toBankAccount.setBalance(balance);
+        bankAccountRepository.save(toBankAccount);
+
+        transactionHistoryList.get(1).setBalance(balance);
+        transactionHistoryList.forEach(transactionHistory -> transactionHistory.setTransactionStatus(TransactionStatus.COMPLETED));
+        transactionHistoryRepository.saveAll(transactionHistoryList);
+
+        log.info("[completeTransaction] completed.");
     }
 }

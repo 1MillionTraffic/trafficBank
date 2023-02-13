@@ -1,10 +1,12 @@
 package com.trafficbank.trafficbank.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.trafficbank.trafficbank.anootation.ShortLocker;
 import com.trafficbank.trafficbank.model.dto.TransactionResult;
 import com.trafficbank.trafficbank.service.TransactionHistoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 
@@ -18,11 +20,10 @@ public class TransactionHistoryController {
     private final TransactionHistoryService transactionHistoryService;
 
     @ShortLocker(key = "accountId={0}", unlock = true)
-    @ShortLocker(key = "accountId={1}", unlock = true)
     @PostMapping
     public List<TransactionResult> transferMoney(@RequestParam("from_account_id") Long fromBankAccountId,
                                                  @RequestParam("to_account_id") Long toBankAccountId,
-                                                 @RequestParam long money) {
+                                                 @RequestParam long money) throws JsonProcessingException {
         if (money <= 0) {
             throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Money is not natural number.");
         }
@@ -60,4 +61,8 @@ public class TransactionHistoryController {
         return transactionHistoryService.deposit(accountId, money);
     }
 
+    @KafkaListener(topics = "${topics.transaction}", groupId = "transfer")
+    public void completeTransaction(String message) throws JsonProcessingException {
+        transactionHistoryService.completeTransaction(message);
+    }
 }

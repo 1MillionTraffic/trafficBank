@@ -20,6 +20,32 @@ services:
       - "26379:6379"
     volumes:
       - traffic-bank-redis-volume:/usr/local/etc/redis
+  zookeeper-traffic-bank:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: zookeeper-traffic-bank
+    environment:
+      ZOOKEEPER_SERVER_ID: 1
+      ZOOKEEPER_CLIENT_PORT: 2181 #클라이언트가 주키퍼 접속을 위한 포트
+      ZOOKEEPER_TICK_TIME: 2000  #Tick 단위시간
+      ZOOKEEPER_INIT_LIMIT: 5  #팔로워가 리더와 연결시도를 하는 최대 횟수
+      ZOOKEEPER_SYNC_LIMIT: 2  #팔로워가 리더와 연결된 후, 앙상블 안에서 리더와 동기화되기 위한 제한 수.
+    ports:
+      - "22181:2181"
+  kafka-traffic-bank:
+    image: confluentinc/cp-kafka:latest
+    container_name: kafka-traffic-bank
+    depends_on:
+      - zookeeper-traffic-bank
+    ports:
+      - "29092:29092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper-traffic-bank:2181'
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-traffic-bank:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
 
 volumes:
   traffic-bank-mysql-volume:
