@@ -1,7 +1,10 @@
 package com.trafficbank.trafficbank.repository;
 
 import com.trafficbank.trafficbank.model.entity.TransactionHistory;
+import com.trafficbank.trafficbank.model.enums.TransactionStatus;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.stereotype.Repository;
 
 import java.time.Instant;
@@ -16,6 +19,7 @@ public interface TransactionHistoryRepository extends JpaRepository<TransactionH
 
     List<TransactionHistory> findAllByCreatedDtBetween(Instant from, Instant to);
 
-    List<TransactionHistory> findAllByIdIn(List<Long> idList);
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    List<TransactionHistory> findAllByIdInAndTransactionStatus(List<Long> idList, TransactionStatus status);
 
 }

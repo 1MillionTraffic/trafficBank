@@ -156,7 +156,7 @@ public class TransactionHistoryService {
 
         TransactionMessage transactionMessage = objectMapper.readValue(message, TransactionMessage.class);
 
-        List<TransactionHistory> transactionHistoryList = transactionHistoryRepository.findAllByIdIn(List.of(transactionMessage.getFromTransactionId(), transactionMessage.getToTransactionId()));
+        List<TransactionHistory> transactionHistoryList = transactionHistoryRepository.findAllByIdInAndTransactionStatus(List.of(transactionMessage.getFromTransactionId(), transactionMessage.getToTransactionId()), TransactionStatus.PROGRESS);
 
         Optional<BankAccount> optionalFromBankAccount = bankAccountRepository.findWithPessimisticLockById(transactionMessage.getFromBankAccountId());
         Optional<BankAccount> optionalToBankAccount = bankAccountRepository.findWithPessimisticLockById(transactionMessage.getToBankAccountId());
