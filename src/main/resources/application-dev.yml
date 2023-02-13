@@ -35,4 +35,7 @@ topics:
 
 logging:
   level:
-    root: info
+    root: debug
+    org:
+      apache:
+        kafka: info
