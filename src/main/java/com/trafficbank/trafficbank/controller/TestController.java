@@ -29,4 +29,24 @@ public class TestController {
         return "test2";
     }
 
+    @RequestMapping("/test/sync")
+    public String testSync() throws SQLException {
+        System.out.println("[TestController] thread: " + Thread.currentThread().getId());
+        testService.testSync();
+        testService.testSync();
+        testService.testSync();
+        testService.testSync();
+        return "test-sync";
+    }
+
+    @RequestMapping("/test/async")
+    public String testAsync() throws SQLException {
+        System.out.println("[TestController] thread: " + Thread.currentThread().getId());
+        testService.testAsync();
+        testService.testAsync();
+        testService.testAsync();
+        testService.testAsync();
+        return "test-async";
+    }
+
 }

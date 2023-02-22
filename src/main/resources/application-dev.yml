@@ -4,6 +4,8 @@ spring:
     url: jdbc:mysql://localhost:23306/bank
     username: root
     password: root
+    hikari:
+      maximum-pool-size: 100
   flyway:
     enabled: true
     url: jdbc:mysql://localhost:23306/bank

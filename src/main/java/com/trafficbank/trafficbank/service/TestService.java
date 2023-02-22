@@ -87,5 +87,15 @@ public class TestService {
         System.out.println("------------------------------------------");
     }
 
+    public void testSync() {
+        System.out.println("[TestService] test4 thread: " + Thread.currentThread().getId());
+        bankAccountRepository.findById(1L);
+    }
+
+    @Async
+    public void testAsync() {
+        System.out.println("[TestService] test4 thread: " + Thread.currentThread().getId());
+        bankAccountRepository.findById(1L);
+    }
 
 }
