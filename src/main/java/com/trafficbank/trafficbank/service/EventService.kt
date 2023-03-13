@@ -4,6 +4,7 @@ import com.trafficbank.trafficbank.model.dto.EventDTO
 import com.trafficbank.trafficbank.repository.EventRepository
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.time.Duration
 import kotlin.jvm.optionals.getOrNull
 
@@ -65,6 +66,23 @@ class EventService(
         return eventRepository.findWithPessimisticLockById(eventId)
             ?.let { it.limitUser > it.currentUser }
             ?: return false
+    }
+
+    @Transactional
+    fun submitEvent(eventId: Long, sessionId: String): Boolean {
+        if (!checkAccess(eventId, sessionId)) {
+            return false
+        }
+
+        val event = eventRepository.findWithPessimisticLockById(eventId) ?: return false
+        if (event.limitUser <= event.currentUser) {
+            return false
+        }
+
+        eventRepository.save(event.copy(currentUser = event.currentUser + 1))
+        // 그 외 기타 비즈니스 로직 저장
+
+        return true
     }
 
 }

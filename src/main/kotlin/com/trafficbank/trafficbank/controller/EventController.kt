@@ -33,4 +33,13 @@ class EventController(private val eventService: EventService) {
         return BaseResult("성공")
     }
 
+    @PostMapping("/submit/{eventId}")
+    fun submitEvent(request: HttpServletRequest, @PathVariable eventId: Long): BaseResult {
+        if (!eventService.submitEvent(eventId, request.session.id)) {
+            return BaseResult("실패", HttpStatus.BAD_REQUEST)
+        }
+
+        return BaseResult("성공")
+    }
+
 }
