@@ -21,7 +21,7 @@ class EventService(
     fun requestEvent(eventId: Long, sessionId: String): Pair<String?, HttpStatus> {
         val eventDTO = getEventDTO(eventId) ?: return null to HttpStatus.BAD_REQUEST
 
-        if (eventDTO.isFullLimit || !checkValidUser(eventDTO)) {
+        if (eventDTO.isFullRequestLimit || !checkValidUser(eventDTO)) {
             return "실패" to HttpStatus.FORBIDDEN
         }
 
@@ -34,12 +34,12 @@ class EventService(
         val eventId = eventDTO.id
         val userCount = redisService.increment(eventLimitCountKey.format(eventId))
 
-        if (userCount == eventDTO.limitUser) {
+        if (userCount == eventDTO.requestLimitUser) {
             eventRepository.updateIsFullLimit(true)
             redisService.clear(eventKey.format(eventId))
         }
 
-        if (userCount > eventDTO.limitUser) {
+        if (userCount > eventDTO.requestLimitUser) {
             return false
         }
 
@@ -55,6 +55,16 @@ class EventService(
         redisService.set(cacheKey, event, Duration.ofMinutes(30))
 
         return EventDTO(event)
+    }
+
+    fun checkAccess(eventId: Long, sessionId: String): Boolean {
+        return redisService.isMemberSet(eventUserSetKey.format(eventId), sessionId)
+    }
+
+    fun isFinished(eventId: Long): Boolean {
+        return eventRepository.findWithPessimisticLockById(eventId)
+            ?.let { it.limitUser > it.currentUser }
+            ?: return false
     }
 
 }

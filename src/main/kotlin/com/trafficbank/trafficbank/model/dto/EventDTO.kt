@@ -4,8 +4,8 @@ import com.trafficbank.trafficbank.model.entity.Event
 
 data class EventDTO(
     val id: Long,
-    val limitUser: Long,
-    val isFullLimit: Boolean
+    val requestLimitUser: Long,
+    val isFullRequestLimit: Boolean
 ) {
-    constructor(event: Event) : this(event.id!!, event.limitUser, event.isFullLimit)
+    constructor(event: Event) : this(event.id!!, event.requestLimitUser, event.isFullRequestLimit)
 }

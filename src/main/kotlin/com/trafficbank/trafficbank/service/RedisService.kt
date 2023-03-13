@@ -32,7 +32,7 @@ class RedisService(private val stringRedisTemplate: StringRedisTemplate, private
         stringRedisTemplate.opsForSet().add(key, objectMapper.writeValueAsString(value))!!
 
     fun isMemberSet(key: String, value: Any) =
-        stringRedisTemplate.opsForSet().isMember(key, objectMapper.writeValueAsString(value))!!
+        stringRedisTemplate.opsForSet().isMember(key, objectMapper.writeValueAsString(value)) ?: false
 
 
 }

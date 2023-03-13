@@ -10,6 +10,8 @@ data class Event(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
+    val requestLimitUser: Long,
+    val isFullRequestLimit: Boolean,
     val limitUser: Long,
-    val isFullLimit: Boolean
+    val currentUser: Long
 )
