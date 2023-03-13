@@ -63,7 +63,7 @@ class EventService(
     }
 
     fun isFinished(eventId: Long): Boolean {
-        return eventRepository.findWithPessimisticLockById(eventId)
+        return eventRepository.findById(eventId).getOrNull()
             ?.let { it.limitUser > it.currentUser }
             ?: return false
     }
