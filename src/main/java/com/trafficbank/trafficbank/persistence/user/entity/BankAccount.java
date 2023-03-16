@@ -1,4 +1,4 @@
-package com.trafficbank.trafficbank.model.entity;
+package com.trafficbank.trafficbank.persistence.user.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

@@ -1,7 +1,7 @@
-package com.trafficbank.trafficbank.repository;
+package com.trafficbank.trafficbank.persistence.user.repository;
 
-import com.trafficbank.trafficbank.model.entity.TransactionHistory;
 import com.trafficbank.trafficbank.model.enums.TransactionStatus;
+import com.trafficbank.trafficbank.persistence.user.entity.TransactionHistory;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;

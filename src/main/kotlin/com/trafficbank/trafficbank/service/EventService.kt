@@ -1,7 +1,7 @@
 package com.trafficbank.trafficbank.service
 
 import com.trafficbank.trafficbank.model.dto.EventDTO
-import com.trafficbank.trafficbank.repository.EventRepository
+import com.trafficbank.trafficbank.persistence.bank.repository.EventRepository
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -36,7 +36,7 @@ class EventService(
         val userCount = redisService.increment(eventLimitCountKey.format(eventId))
 
         if (userCount == eventDTO.requestLimitUser) {
-            eventRepository.updateIsFullLimit(true)
+            eventRepository.updateIsFullRequestLimit(true)
             redisService.clear(eventKey.format(eventId))
         }
 
@@ -64,7 +64,7 @@ class EventService(
 
     fun isFinished(eventId: Long): Boolean {
         return eventRepository.findById(eventId).getOrNull()
-            ?.let { it.limitUser > it.currentUser }
+            ?.let { it.limitUser > it.currentUserCnt }
             ?: return false
     }
 
@@ -75,11 +75,11 @@ class EventService(
         }
 
         val event = eventRepository.findWithPessimisticLockById(eventId) ?: return false
-        if (event.limitUser <= event.currentUser) {
+        if (event.limitUser <= event.currentUserCnt) {
             return false
         }
 
-        eventRepository.save(event.copy(currentUser = event.currentUser + 1))
+        eventRepository.save(event.copy(currentUserCnt = event.currentUserCnt + 1))
         // 그 외 기타 비즈니스 로직 저장
 
         return true

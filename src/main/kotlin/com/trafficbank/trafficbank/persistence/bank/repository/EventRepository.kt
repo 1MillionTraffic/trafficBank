@@ -1,6 +1,6 @@
-package com.trafficbank.trafficbank.repository
+package com.trafficbank.trafficbank.persistence.bank.repository
 
-import com.trafficbank.trafficbank.model.entity.Event
+import com.trafficbank.trafficbank.persistence.bank.entity.Event
 import jakarta.persistence.LockModeType
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Lock
@@ -12,7 +12,7 @@ interface EventRepository : JpaRepository<Event, Long> {
     @Transactional
     @Modifying
     @Query("update Event e set e.isFullRequestLimit = :isFullRequestLimit")
-    fun updateIsFullLimit(isFullRequestLimit: Boolean)
+    fun updateIsFullRequestLimit(isFullRequestLimit: Boolean)
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     fun findWithPessimisticLockById(eventId: Long): Event?

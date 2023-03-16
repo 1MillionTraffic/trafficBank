@@ -1,11 +1,15 @@
 spring:
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:23306/bank
-    username: root
-    password: root
-    hikari:
-      maximum-pool-size: 100
+    bank:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      url: jdbc:mysql://localhost:23306/bank
+      username: root
+      password: root
+    user:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      url: jdbc:mysql://localhost:23307/bank_user
+      username: root
+      password: root
   flyway:
     enabled: true
     url: jdbc:mysql://localhost:23306/bank
@@ -37,7 +41,7 @@ topics:
 
 logging:
   level:
-    root: debug
+    root: info
     org:
       apache:
         kafka: info

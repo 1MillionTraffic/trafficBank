@@ -1,6 +1,6 @@
 package com.trafficbank.trafficbank.service;
 
-import com.trafficbank.trafficbank.repository.BankAccountRepository;
+import com.trafficbank.trafficbank.persistence.user.repository.BankAccountRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import lombok.RequiredArgsConstructor;

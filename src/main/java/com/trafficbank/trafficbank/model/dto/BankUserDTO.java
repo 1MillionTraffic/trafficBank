@@ -1,6 +1,6 @@
 package com.trafficbank.trafficbank.model.dto;
 
-import com.trafficbank.trafficbank.model.entity.BankUser;
+import com.trafficbank.trafficbank.persistence.user.entity.BankUser;
 import lombok.Builder;
 
 import java.time.Instant;

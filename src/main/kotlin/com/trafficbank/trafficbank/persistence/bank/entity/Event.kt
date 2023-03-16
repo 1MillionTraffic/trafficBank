@@ -1,4 +1,4 @@
-package com.trafficbank.trafficbank.model.entity
+package com.trafficbank.trafficbank.persistence.bank.entity
 
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
@@ -13,5 +13,5 @@ data class Event(
     val requestLimitUser: Long,
     val isFullRequestLimit: Boolean,
     val limitUser: Long,
-    val currentUser: Long
+    val currentUserCnt: Long
 )

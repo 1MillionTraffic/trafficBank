@@ -1,7 +1,7 @@
 package com.trafficbank.trafficbank.model.dto;
 
-import com.trafficbank.trafficbank.model.entity.TransactionHistory;
 import com.trafficbank.trafficbank.model.enums.TransactionType;
+import com.trafficbank.trafficbank.persistence.user.entity.TransactionHistory;
 import lombok.Builder;
 
 import java.time.Instant;

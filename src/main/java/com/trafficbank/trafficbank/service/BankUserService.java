@@ -1,7 +1,7 @@
 package com.trafficbank.trafficbank.service;
 
-import com.trafficbank.trafficbank.model.entity.BankUser;
-import com.trafficbank.trafficbank.repository.BankUserRepository;
+import com.trafficbank.trafficbank.persistence.user.entity.BankUser;
+import com.trafficbank.trafficbank.persistence.user.repository.BankUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

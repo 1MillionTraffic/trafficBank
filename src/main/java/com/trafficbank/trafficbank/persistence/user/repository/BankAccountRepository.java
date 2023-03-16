@@ -1,6 +1,6 @@
-package com.trafficbank.trafficbank.repository;
+package com.trafficbank.trafficbank.persistence.user.repository;
 
-import com.trafficbank.trafficbank.model.entity.BankAccount;
+import com.trafficbank.trafficbank.persistence.user.entity.BankAccount;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;

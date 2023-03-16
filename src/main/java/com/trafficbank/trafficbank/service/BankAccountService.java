@@ -1,10 +1,10 @@
 package com.trafficbank.trafficbank.service;
 
-import com.trafficbank.trafficbank.model.entity.BankAccount;
 import com.trafficbank.trafficbank.model.enums.BankCacheKey;
 import com.trafficbank.trafficbank.model.enums.BankType;
-import com.trafficbank.trafficbank.repository.BankAccountRepository;
-import com.trafficbank.trafficbank.repository.BankUserRepository;
+import com.trafficbank.trafficbank.persistence.user.entity.BankAccount;
+import com.trafficbank.trafficbank.persistence.user.repository.BankAccountRepository;
+import com.trafficbank.trafficbank.persistence.user.repository.BankUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
