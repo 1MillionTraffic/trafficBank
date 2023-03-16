@@ -21,7 +21,7 @@ class EventController(private val eventService: EventService) {
     }
 
     @GetMapping("/query/{eventId}")
-    fun queryEvent(request: HttpServletRequest, @PathVariable eventId: Long): BaseResult {
+    fun checkEvent(request: HttpServletRequest, @PathVariable eventId: Long): BaseResult {
         if (!eventService.checkAccess(eventId, request.session.id)) {
             return BaseResult("실패", HttpStatus.FORBIDDEN)
         }
@@ -40,6 +40,11 @@ class EventController(private val eventService: EventService) {
         }
 
         return BaseResult("성공")
+    }
+
+    @GetMapping("/{eventId}")
+    fun queryEvent(@PathVariable eventId: Long): BaseResult {
+        return BaseResult(eventService.getEventDTO(eventId))
     }
 
 }

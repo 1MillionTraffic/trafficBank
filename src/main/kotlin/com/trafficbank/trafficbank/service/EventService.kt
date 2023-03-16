@@ -47,9 +47,10 @@ class EventService(
         return true
     }
 
-    private fun getEventDTO(eventId: Long): EventDTO? {
+    fun getEventDTO(eventId: Long): EventDTO? {
         val cacheKey = eventKey.format(eventId)
-        redisService.get(cacheKey, EventDTO::class.java) ?: return null
+        val eventDTO = redisService.get(cacheKey, EventDTO::class.java)
+        if (eventDTO != null) return eventDTO
 
         val event = eventRepository.findById(eventId).getOrNull() ?: return null
 

@@ -4,6 +4,9 @@ import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
+import org.hibernate.annotations.CreationTimestamp
+import org.hibernate.annotations.UpdateTimestamp
+import java.time.Instant
 
 @Entity
 data class Event(
@@ -13,5 +16,9 @@ data class Event(
     val requestLimitUser: Long,
     val isFullRequestLimit: Boolean,
     val limitUser: Long,
-    val currentUserCnt: Long
+    val currentUserCnt: Long,
+    @CreationTimestamp
+    val createdDt: Instant? = null,
+    @UpdateTimestamp
+    val updatedDt: Instant? = null,
 )
