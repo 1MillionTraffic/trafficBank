@@ -13,6 +13,19 @@ services:
       - --collation-server=utf8mb4_unicode_ci
     volumes:
       - traffic-bank-mysql-volume:/var/lib/mysql
+  mysql-traffic-bank-user:
+    image: mysql:8.0
+    container_name: mysql-traffic-bank-user
+    ports:
+      - "23307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: bank_user
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - traffic-bank-user-mysql-volume:/var/lib/mysql
   redis-traffic-bank:
     image: redis:7.0
     container_name: redis-traffic-bank
@@ -62,6 +75,8 @@ services:
 
 volumes:
   traffic-bank-mysql-volume:
+    driver: local
+  traffic-bank-user-mysql-volume:
     driver: local
   traffic-bank-redis-volume:
     driver: local
