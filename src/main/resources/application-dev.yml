@@ -10,6 +10,16 @@ spring:
       url: jdbc:mysql://localhost:23307/bank_user
       username: root
       password: root
+    coupon1:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      url: jdbc:mysql://localhost:13307/coupon1
+      username: root
+      password: root
+    coupon2:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      url: jdbc:mysql://localhost:13308/coupon2
+      username: root
+      password: root
   flyway:
     enabled: true
     url: jdbc:mysql://localhost:23306/bank

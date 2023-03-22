@@ -8,3 +8,11 @@ create table event
     created_dt            timestamp  not null default current_timestamp,
     updated_dt            timestamp  not null default current_timestamp on update current_timestamp
 );
+
+create table coupon
+(
+    id         bigint auto_increment primary key,
+    coupon     varchar(100) not null,
+    created_dt timestamp    not null default current_timestamp,
+    updated_dt timestamp    not null default current_timestamp on update current_timestamp
+);
